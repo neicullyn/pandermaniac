@@ -1,14 +1,53 @@
 import json
-# import networkx
+import networkx as nx
+import time
 
 
 # main thing we need to fill in
 # we need to return a list of nodes with length num_seeds
 def select_nodes(node_dict, num_seeds):
-	print(node_dict)
+	start = time.time()
 	nodes_chosen = [str(i+5) for i in range(num_seeds)]
 
-	return nodes_chosen
+	# convert dict to networkx graph structure
+	G = nx.Graph()
+	for node in node_dict:
+		for to_node in node_dict[node]:
+			G.add_edge(node, to_node)
+
+
+	neighbor_dict = {}
+	for node in G.nodes():
+		to_visit = [node]
+		visited_neighbors = {}
+		for i in range(3):
+			next_visit = []
+			for n_v in to_visit:
+				neighbors = G.neighbors(n_v)
+				for nb in neighbors:
+					if nb not in visited_neighbors:
+						visited_neighbors[nb] = None
+						next_visit.append(nb)
+			to_visit = next_visit
+		neighbor_dict[node] = len(visited_neighbors)
+
+
+
+
+	# close_dict = nx.closeness_centrality(G)
+	# lengh_dict = nx.shortest_path_length(G)
+	result_list = []
+	for node, value in neighbor_dict.items():
+		result_list.append((value, node))
+	result_list.sort(reverse=True)
+	print(result_list[:num_seeds])
+	# for item in close_list:
+		# print(item)
+
+	print('{}'.format(time.time()-start))
+
+	# return nodes_chosen
+	return [pair[1] for pair in result_list[:num_seeds]]
 
 
 

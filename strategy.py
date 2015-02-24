@@ -1,20 +1,23 @@
 import json
-import snap
 import time
 from itertools import repeat
 import multiprocessing as mp
 import networkx as nx
 import random
 
+def convert_json_dict(fin_name):
+    with open(fin_name, 'r') as fin:
+        node_dict = json.load(fin)
+    return node_dict
 
-def build_graph_snap(node_dict):
-    G = snap.TUNGraph().New()
-    for node in node_dict:
-        G.AddNode(int(node))
-    for node in node_dict:
-        for to_node in node_dict[node]:
-            G.AddEdge(int(node), int(to_node))    
-    return G
+# def build_graph_snap(node_dict):
+#     G = snap.TUNGraph().New()
+#     for node in node_dict:
+#         G.AddNode(int(node))
+#     for node in node_dict:
+#         for to_node in node_dict[node]:
+#             G.AddEdge(int(node), int(to_node))    
+#     return G
 
 def build_graph(node_dict):
     G = nx.Graph()
@@ -130,14 +133,17 @@ class Strtg:
             if key != 'graph':
                 self.weights[key] = random.random()
                 
-        self.weights['between_node'] = random.random() 
+        self.weights['between_node'] = random.random()
+        self.weights['rand_range'] = random.random()  
         pass
     
     def read_from_file(self, file_name):
-        pass
+        with open(file_name, 'r') as input_file:
+            self.weights = json.load(input_file)
     
     def write_to_file(self, file_name):
-        pass
+        with open(file_name, 'w') as output_file:
+            json.dump(self.weights, output_file, sort_keys=True, indent=4) 
     
     def get_nodes(self, data, n_player, n_nodes):
         scores = []
@@ -150,8 +156,32 @@ class Strtg:
             scores.append((s, node))
             
         scores.sort(reverse=True)
-        sorted_nodes = zip(*scores)[1]
-        return sorted_nodes[0 : n_nodes]
+        
+        scores = scores[0 : min(n_nodes * 3, len(scores))]
+        scores_with_dist = []
+        for s, src_node in scores:
+            dist = 0
+            for ss, dst_node in scores:
+                if src_node != dst_node:
+                    dist += nx.shortest_path_length(data['graph'], src_node, dst_node)
+            dist = 1.0 * dist / (len(scores) - 1) - 1
+            scores_with_dist.append((s + dist * self.weights['between_node'], src_node ))
+        
+
+        scores_with_dist.sort(reverse=True)
+        rst = zip(*scores_with_dist)[1]
+                
+#         sorted_nodes = list(zip(*scores)[1])
+#         
+#         determine_nodes = 
+        
+#         random_range = int(n_nodes * (1 + self.weights['rand_range'] * n_player))
+#         random_range = min(random_range, len(nodes))
+#         
+#         shuffle_nodes = sorted_nodes[0 : random_range]
+#         random.shuffle(shuffle_nodes)
+        
+        return rst
         
     
     

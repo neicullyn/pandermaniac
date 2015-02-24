@@ -50,8 +50,8 @@ def local_run(json_file, f1_player, f2_player):
 # 	local_run(args.json_file, args.f1, args.f2)
 
 if __name__ == '__main__':
-	json_file = '8.20.01.json'
-# 	json_file = '8.35.2.json'
+# 	json_file = '8.20.01.json'
+	json_file = '8.35.2.json'
 # 	json_file = '4.5.01.json'
 	node_dict = convert_json_dict(json_file)
 	data = preprocess(node_dict)
@@ -62,6 +62,9 @@ if __name__ == '__main__':
 		strategy1.weights[key] = 0
 	strategy1.weights['closeness_centrality'] = 1
 # 	strategy1.weights['clustering'] = 0.13
+	strategy1.weights['neighbor_number_1'] = 0.6
+	strategy1.weights['neighbor_number_2'] = 0.2
+	strategy1.weights['neighbor_number_3'] = 0.04
 	
 	strategy2 = Strtg()
 	strategy2.random_weight(data)
@@ -69,9 +72,10 @@ if __name__ == '__main__':
 	for key in strategy2.weights:
 		strategy2.weights[key] = 0
 	strategy2.weights['degree_centrality'] = 1
+# 	strategy2.weights['closeness_centrality'] = 1
 	
-	player1 = [strategy1.get_nodes(data, 8, 20)]
-	player2 = [strategy2.get_nodes(data, 8, 20)]
+	player1 = [strategy1.get_nodes(data, 8, 35)]
+	player2 = [strategy2.get_nodes(data, 8, 35)]
 	
 	
 	local_run(json_file, player1, player2)

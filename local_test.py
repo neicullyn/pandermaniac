@@ -1,5 +1,6 @@
 import sim
 import json
+import time
 from strategy import Strtg, preprocess
 
 def convert_txt_list(fin_name, num_seeds, num_games):
@@ -51,12 +52,16 @@ def local_run(json_file, f1_player, f2_player):
 
 if __name__ == '__main__':
 # 	json_file = '8.20.01.json'
-# 	json_file = '8.35.2.json'
-	json_file = '4.5.01.json'
+	json_file = '8.35.2.json'
+# 	json_file = '4.5.01.json'
 # 	json_file = '2.5.01.json'
 # 	json_file = '4.10.01.json'
 	node_dict = convert_json_dict(json_file)
+	
+	start_time = time.time()
 	data = preprocess(node_dict)
+	end_time = time.time()
+	print 'preprocess: {}'.format(end_time - start_time)
 	
 	strategy1 = Strtg()
 	strategy1.random_weight(data)
@@ -80,9 +85,14 @@ if __name__ == '__main__':
 	strategy2.weights['degree_centrality'] = 1
 # 	strategy2.weights['closeness_centrality'] = 1
 # 	strategy2.read_from_file('strtg\\beat_degree2.json')
+
+	start_time = time.time()
+	player1 = [strategy1.get_nodes(data, 2, 35)]
+	player2 = [strategy2.get_nodes(data, 2, 35)]
+	end_time = time.time()
+	print 'two strategy: {}'.format(end_time - start_time)
 	
-	player1 = [strategy1.get_nodes(data, 2, 5)]
-	player2 = [strategy2.get_nodes(data, 2, 5)]
-	
-	
+	start_time = time.time()
 	local_run(json_file, player1, player2)
+	end_time = time.time()
+	print 'run graph: {}'.format(end_time - start_time)

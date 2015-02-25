@@ -4,6 +4,8 @@ from itertools import repeat
 import multiprocessing as mp
 import networkx as nx
 import random
+from copy import deepcopy
+
 
 def convert_json_dict(fin_name):
     with open(fin_name, 'r') as fin:
@@ -121,6 +123,69 @@ def preprocess(node_dict, debug=False):
         
     
 #     data['closeness_centrality'] = nx.closeness_centrality(G)
+def mutate(strategy):
+    s = deepcopy(strategy)
+    keys = s.weights.keys()
+    mutate_key = random.choice(keys)
+#     mutate_rate = random.randint(0, 1) * 0.4 + 0.8 #0.8|1.2
+    mutate_rate = 1
+    mutate_diff = (random.randint(0, 1) - 0.5) * 2 * 0.2 / len(keys)
+    s.weights[mutate_key] = max(s.weights[mutate_key] * mutate_rate + mutate_diff, 0)
+    
+    overall_weight = sum(s.weights.values())
+    for key, val in s.weights.items():
+        s.weights[key] = val / overall_weight
+
+    return s
+
+def swap(strategy):
+    s = deepcopy(strategy)
+    keys = s.weights.keys()
+    random.shuffle(keys)
+    k1 = keys[0]
+    k2 = keys[1]
+    s.weights[k1], s.weights[k2] = s.weights[k2], s.weights[k1]
+    return s
+
+def cross(src1, src2):
+    s1 = deepcopy(src1)
+    s2 = deepcopy(src2)
+    
+    keys = s1.weights.keys()
+    key = random.choice(keys)
+    s1.weights[key], s2.weights[key] = s2.weights[key], s1.weights[key]
+    
+    overall_weight = sum(s1.weights.values())
+    for key, val in s1.weights.items():
+        s1.weights[key] = val / overall_weight
+     
+    overall_weight = sum(s2.weights.values())
+    for key, val in s2.weights.items():
+        s2.weights[key] = val / overall_weight
+        
+    return s1, s2
+
+def generate_mutation_group(src_group, n_size):
+    rtn_group = []
+    while len(rtn_group) < n_size:
+        mutate_type = random.choice(['mutate', 'swap', 'cross'])
+        
+        if mutate_type == 'mutate':
+            src = random.choice(src_group)
+            rtn_group.append(mutate(src))
+        
+        if mutate_type == 'swap':
+            src = random.choice(src_group)
+            rtn_group.append(swap(src))
+        
+        if mutate_type == 'cross':
+            src1 = random.choice(src_group)
+            src2 = src1
+            while src2 == src1:
+                src2 = random.choice(src_group)
+            rtn_group.extend(cross(src1, src2))
+            
+    return rtn_group[0 : n_size]    
 
 class Strtg:
     def __init__(self):
@@ -134,7 +199,11 @@ class Strtg:
                 self.weights[key] = random.random()
                 
         self.weights['between_node'] = random.random()
-        self.weights['rand_range'] = random.random()  
+        
+        overall_weight = sum(self.weights.values())
+        
+        for key, val in self.weights.items():
+            self.weights[key] = val / overall_weight
         pass
     
     def read_from_file(self, file_name):
@@ -181,7 +250,11 @@ class Strtg:
 #         shuffle_nodes = sorted_nodes[0 : random_range]
 #         random.shuffle(shuffle_nodes)
         
-        return rst
+        return rst[0 : n_nodes]
+    
+    def __str__(self):
+        v = sorted(self.weights.items())
+        return ', '.join(['%.3f' % val for key, val in v])
         
     
     

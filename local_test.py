@@ -52,9 +52,9 @@ def local_run(json_file, f1_player, f2_player):
 
 if __name__ == '__main__':
 # 	json_file = '8.20.01.json'
-	json_file = '8.35.2.json'
+# 	json_file = '8.35.2.json'
 # 	json_file = '4.5.01.json'
-# 	json_file = '2.5.01.json'
+	json_file = '2.5.01.json'
 # 	json_file = '4.10.01.json'
 	node_dict = convert_json_dict(json_file)
 	
@@ -79,10 +79,10 @@ if __name__ == '__main__':
 	print strategy1.weights
 	strategy2 = Strtg()
 	strategy2.random_weight(data)
-	
-	for key in strategy2.weights:
-		strategy2.weights[key] = 0
-	strategy2.weights['degree_centrality'] = 1
+	print strategy2.weights
+# 	for key in strategy2.weights:
+# 		strategy2.weights[key] = 0
+# 	strategy2.weights['degree_centrality'] = 1
 # 	strategy2.weights['closeness_centrality'] = 1
 # 	strategy2.read_from_file('strtg\\beat_degree2.json')
 

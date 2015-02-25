@@ -238,7 +238,7 @@ class Strtg:
         
 
         scores_with_dist.sort(reverse=True)
-        rst = zip(*scores_with_dist)[1]
+        rst = list(zip(*scores_with_dist)[1])
                 
 #         sorted_nodes = list(zip(*scores)[1])
 #         
@@ -249,7 +249,6 @@ class Strtg:
 #         
 #         shuffle_nodes = sorted_nodes[0 : random_range]
 #         random.shuffle(shuffle_nodes)
-        
         return rst[0 : n_nodes]
     
     def __str__(self):

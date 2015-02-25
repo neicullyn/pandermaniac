@@ -13,6 +13,7 @@ if __name__ == '__main__':
     
     src_group = [s1, s2]
     mutate_group = generate_mutation_group(src_group, 16)
+    s1.write_to_file('sta.json')
     for x in src_group:
         print x
     for x in mutate_group:

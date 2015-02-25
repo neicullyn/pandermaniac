@@ -133,8 +133,13 @@ def mutate(strategy):
     s.weights[mutate_key] = max(s.weights[mutate_key] * mutate_rate + mutate_diff, 0)
     
     overall_weight = sum(s.weights.values())
-    for key, val in s.weights.items():
-        s.weights[key] = val / overall_weight
+    if overall_weight < 1e-6:
+        overall_weight = len(keys)
+        for key, val in s.weights.items():
+            s.weights[key] = 1.0 / overall_weight
+    else:
+        for key, val in s.weights.items():
+            s.weights[key] = val / overall_weight
 
     return s
 
@@ -156,12 +161,22 @@ def cross(src1, src2):
     s1.weights[key], s2.weights[key] = s2.weights[key], s1.weights[key]
     
     overall_weight = sum(s1.weights.values())
-    for key, val in s1.weights.items():
-        s1.weights[key] = val / overall_weight
+    if overall_weight < 1e-6:
+        overall_weight = len(keys)
+        for key, val in s1.weights.items():
+            s1.weights[key] = 1.0 / overall_weight
+    else:
+        for key, val in s1.weights.items():
+            s1.weights[key] = val / overall_weight
      
     overall_weight = sum(s2.weights.values())
-    for key, val in s2.weights.items():
-        s2.weights[key] = val / overall_weight
+    if overall_weight < 1e-6:
+        overall_weight = len(keys)
+        for key, val in s2.weights.items():
+            s2.weights[key] = 1.0 / overall_weight
+    else:
+        for key, val in s2.weights.items():
+            s2.weights[key] = val / overall_weight
         
     return s1, s2
 

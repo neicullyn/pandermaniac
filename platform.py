@@ -106,7 +106,7 @@ if __name__ == '__main__':
     for s in last_step_strategies:
         print s
     
-    map_name, map_data, json_dict, n_players, n_seeds = map_info[2]
+    map_name, map_data, json_dict, n_players, n_seeds = map_info[1]
     nodes1 = last_step_strategies[0].get_nodes(map_data, n_players, n_seeds)
     nodes2 = last_step_strategies[1].get_nodes(map_data, n_players, n_seeds)
     
@@ -116,6 +116,11 @@ if __name__ == '__main__':
     start_time = time.time()
     print sim.run(json_dict, nodes, 1)
     end_time = time.time()
+    
     print end_time - start_time
+    
+    mutate_group = strategy.generate_mutation_group(last_step_strategies, 32)
+#     for x in mutate_group:
+#         print x
     
         

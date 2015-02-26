@@ -258,9 +258,9 @@ if __name__ == '__main__':
                     # other_nodes_chosen_list = []
                     players_in_game = {stg_idx}
                     for one_player in range(2-1):
-                        rand_idx = random.randrange(0, NUM_STRATEGIES)
+                        rand_idx = random.randrange(0, NUM_STRATEGIES - NUM_DEFAULT)
                         while rand_idx in players_in_game:
-                            rand_idx = random.randrange(0, NUM_STRATEGIES)
+                            rand_idx = random.randrange(0, NUM_STRATEGIES - NUM_DEFAULT)
                         players_in_game.add(rand_idx)
                         other_stg_nodes = stg_nodes_dict[rand_idx]
                         other_nodes_chosen = other_stg_nodes[map_name]

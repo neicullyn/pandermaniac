@@ -77,13 +77,14 @@ def calculate_dist_and_neighbors(args):
     
 
 
-def preprocess(node_dict, debug=False):
+def preprocess(node_dict, debug=False, multiprocess=False):
     #default distance
     #if the distance is larger than 3, let the distace be 5
     default_distance = 5
     N = len(node_dict)
     #multiprocessing
-    pool = mp.Pool(4)
+    if multiprocess:
+        pool = mp.Pool(4)
     #use a dictionary to save data
     
     G = build_graph(node_dict)
@@ -107,8 +108,10 @@ def preprocess(node_dict, debug=False):
         print 'computing distance and number of neighbors...'
       
     args = zip(repeat(node_dict, len(node_dict)), node_dict.keys())
-      
-    lst = pool.map(calculate_dist_and_neighbors, args)
+    if multiprocess:  
+        lst = pool.map(calculate_dist_and_neighbors, args)
+    else:
+        lst = map(calculate_dist_and_neighbors, args)
       
     data['neighbor_number_1'] = {}
     data['neighbor_number_2'] = {}
@@ -136,6 +139,12 @@ def preprocess(node_dict, debug=False):
     table = nx.clustering(G, nodes)
     
     data['clustering'] = table   
+    
+    
+    if multiprocess:
+        pool.close()
+        pool.join()
+        
     
     return data
           
@@ -280,7 +289,7 @@ class Strtg:
 #         random_range = min(random_range, len(nodes))
 #         
 #         shuffle_nodes = sorted_nodes[0 : random_range]
-#         random.shuffle(shuffle_nodes)
+#         random.shuffle(shuffle_nodes)    
         return rst[0 : n_nodes]
     
     def __str__(self):

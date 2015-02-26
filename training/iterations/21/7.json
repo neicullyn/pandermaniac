@@ -1,9 +1,9 @@
 {
-    "between_node": 0.17044899241070258, 
-    "closeness_centrality": 0.15827135648642868, 
-    "clustering": 0.014663278549466181, 
-    "degree_centrality": 0.21014149597174428, 
-    "neighbor_number_1": 0.07841302908818286, 
-    "neighbor_number_2": 0.19172501632228947, 
-    "neighbor_number_3": 0.17633683117118584
+    "between_node": 0.08694316954082214, 
+    "closeness_centrality": 0.2549770738517597, 
+    "clustering": 0.04989791785609012, 
+    "degree_centrality": 0.2091686135503615, 
+    "neighbor_number_1": 0.05099635319579304, 
+    "neighbor_number_2": 0.26578508090832986, 
+    "neighbor_number_3": 0.08223179109684381
 }

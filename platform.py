@@ -107,12 +107,12 @@ if __name__ == '__main__':
     main_start_time = time.time()
     
     MAX_ITE = 100
-    NUM_DEFAULT = 0
+    NUM_DEFAULT = 4
     NUM_WINNING = 16
     NUM_MUTATIONS = 16
     NUM_RANDOMS = 4
     NUM_STRATEGIES = NUM_WINNING + NUM_MUTATIONS + NUM_RANDOMS + NUM_DEFAULT
-    map_info = load_maps('big_maps.txt')
+    map_info = load_maps('small_maps.txt')
     map_info_dict = {}
     for one_map_info in map_info:
         map_info_dict[one_map_info[0]] = one_map_info
@@ -149,7 +149,9 @@ if __name__ == '__main__':
         ITE_CUR = 0
     else:
         ite_folders.sort(reverse=True)
-        ITE_CUR = ite_folders[1]
+        
+        #----------------------------------------changed
+        ITE_CUR = ite_folders[0]
 
     for ITE_NUM in range(ITE_CUR, MAX_ITE):
         print('Iteration Number = {}'.format(ITE_NUM))
@@ -236,33 +238,57 @@ if __name__ == '__main__':
         count = 0
         pool = mp.Pool(4) 
         for stg_idx, stg_nodes in stg_nodes_dict.items():
+            
+            if stg_idx >= NUM_STRATEGIES - NUM_DEFAULT:
+                continue
+             
             map_score = 0
             
             args_sim = []
-            for map_name, self_nodes_chosen in stg_nodes.items():
-                nodes = {}
-                nodes[stg_idx] = [self_nodes_chosen]
-                
-
-                # make other_nodes_chosen
-                play_map_info = map_info_dict[map_name]
-                map_name, map_data, json_dict, n_players, n_seeds = play_map_info
-                # other_nodes_chosen_list = []
-                players_in_game = {stg_idx}
-                for one_player in range(n_players-1):
-                    rand_idx = random.randrange(0, NUM_STRATEGIES)
-                    while rand_idx in players_in_game:
-                        rand_idx = random.randrange(0, NUM_STRATEGIES)
-                    players_in_game.add(rand_idx)
-                    other_stg_nodes = stg_nodes_dict[rand_idx]
-                    other_nodes_chosen = other_stg_nodes[map_name]
-
-                    nodes[rand_idx] = [other_nodes_chosen]
-                    # other_nodes_chosen_list.append(other_nodes_chosen)
+            #changed
+            for i_boost in range(2):
+                for map_name, self_nodes_chosen in stg_nodes.items():
+                    nodes = {}
+                    nodes[stg_idx] = [self_nodes_chosen]
                     
-                # play game
-#                 sim_res = sim.run(json_dict, nodes, 1)
-                args_sim.append((json_dict.copy(), nodes.copy(), 1))
+    
+                    # make other_nodes_chosen
+                    play_map_info = map_info_dict[map_name]
+                    map_name, map_data, json_dict, n_players, n_seeds = play_map_info
+                    # other_nodes_chosen_list = []
+                    players_in_game = {stg_idx}
+                    for one_player in range(n_players-1):
+                        rand_idx = random.randrange(0, NUM_STRATEGIES)
+                        while rand_idx in players_in_game:
+                            rand_idx = random.randrange(0, NUM_STRATEGIES)
+                        players_in_game.add(rand_idx)
+                        other_stg_nodes = stg_nodes_dict[rand_idx]
+                        other_nodes_chosen = other_stg_nodes[map_name]
+    
+                        nodes[rand_idx] = [other_nodes_chosen]
+                        # other_nodes_chosen_list.append(other_nodes_chosen)
+                    args_sim.append((json_dict.copy(), nodes.copy(), 1))
+                    
+            for i_boost in range(NUM_DEFAULT):
+                for map_name, self_nodes_chosen in stg_nodes.items():
+                    nodes = {}
+                    nodes[stg_idx] = [self_nodes_chosen]
+                    
+    
+                    # make other_nodes_chosen
+                    play_map_info = map_info_dict[map_name]
+                    map_name, map_data, json_dict, n_players, n_seeds = play_map_info
+                    # other_nodes_chosen_list = []
+                    players_in_game = {stg_idx}
+                    for one_player in range(1):
+                        rand_idx = NUM_STRATEGIES - NUM_DEFAULT + i_boost
+                        players_in_game.add(rand_idx)
+                        other_stg_nodes = stg_nodes_dict[rand_idx]
+                        other_nodes_chosen = other_stg_nodes[map_name]
+    
+                        nodes[rand_idx] = [other_nodes_chosen]
+                        # other_nodes_chosen_list.append(other_nodes_chosen)
+                    args_sim.append((json_dict.copy(), nodes.copy(), 1))
             print 'running node {}...'.format(count)
             count += 1
             sim_res_list = pool.map(work_sim, args_sim)    

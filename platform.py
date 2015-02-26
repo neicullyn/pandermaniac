@@ -106,13 +106,13 @@ def preprocess_maps(map_list_name):
 if __name__ == '__main__':
     main_start_time = time.time()
     
-    MAX_ITE = 3
+    MAX_ITE = 20
     NUM_DEFAULT = 4
-    NUM_WINNING = 8
-    NUM_MUTATIONS = 4
+    NUM_WINNING = 16
+    NUM_MUTATIONS = 16
     NUM_RANDOMS = 4
     NUM_STRATEGIES = NUM_WINNING + NUM_MUTATIONS + NUM_RANDOMS + NUM_DEFAULT
-    map_info = load_maps('test_maps.txt')
+    map_info = load_maps('big_maps.txt')
     map_info_dict = {}
     for one_map_info in map_info:
         map_info_dict[one_map_info[0]] = one_map_info
@@ -233,7 +233,8 @@ if __name__ == '__main__':
 
 
         # ---------------------- Below are competitions -------------------
-        
+        count = 0
+        pool = mp.Pool(4) 
         for stg_idx, stg_nodes in stg_nodes_dict.items():
             map_score = 0
             
@@ -262,13 +263,14 @@ if __name__ == '__main__':
                 # play game
 #                 sim_res = sim.run(json_dict, nodes, 1)
                 args_sim.append((json_dict.copy(), nodes.copy(), 1))
-            pool = mp.Pool(4) 
+            print 'running node {}...'.format(count)
+            count += 1
             sim_res_list = pool.map(work_sim, args_sim)    
             for sim_res in sim_res_list:
                 map_score += get_score(sim_res, stg_idx)
-            pool.close()
-            pool.join()
             rank_dict[stg_idx] = map_score
+        pool.close()
+        pool.join()
 
         # rank_stg_idx_list is a sorted list of stg_idx
         rank_stg_idx_list = sorted(rank_dict, key=rank_dict.get, reverse=True)

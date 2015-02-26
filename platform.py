@@ -4,6 +4,7 @@ import time
 import os
 import sim
 import random
+import multiprocessing as mp
 
 
 RANK_LOOK_UP_TABLE = {0: 20, 
@@ -14,6 +15,9 @@ RANK_LOOK_UP_TABLE = {0: 20,
                     5: 4, 
                     6: 2, 
                     7: 1}
+
+def work_sim(args):
+    return sim.run(*args)
 
 def get_score(sim_res, stg_idx):
     if len(sim_res) > 1:
@@ -229,9 +233,11 @@ if __name__ == '__main__':
 
 
         # ---------------------- Below are competitions -------------------
-
+        
         for stg_idx, stg_nodes in stg_nodes_dict.items():
             map_score = 0
+            
+            args_sim = []
             for map_name, self_nodes_chosen in stg_nodes.items():
                 nodes = {}
                 nodes[stg_idx] = [self_nodes_chosen]
@@ -254,9 +260,14 @@ if __name__ == '__main__':
                     # other_nodes_chosen_list.append(other_nodes_chosen)
                     
                 # play game
-                sim_res = sim.run(json_dict, nodes, 1)
+#                 sim_res = sim.run(json_dict, nodes, 1)
+                args_sim.append((json_dict.copy(), nodes.copy(), 1))
+            pool = mp.Pool(4) 
+            sim_res_list = pool.map(work_sim, args_sim)    
+            for sim_res in sim_res_list:
                 map_score += get_score(sim_res, stg_idx)
-
+            pool.close()
+            pool.join()
             rank_dict[stg_idx] = map_score
 
         # rank_stg_idx_list is a sorted list of stg_idx

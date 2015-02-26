@@ -100,8 +100,9 @@ def preprocess_maps(map_list_name):
         print 'finished in {:.3f} seconds'.format(end_time - start_time)
     
 if __name__ == '__main__':
+    main_start_time = time.time()
     
-    MAX_ITE = 1
+    MAX_ITE = 3
     NUM_DEFAULT = 4
     NUM_WINNING = 8
     NUM_MUTATIONS = 4
@@ -147,7 +148,7 @@ if __name__ == '__main__':
         ITE_CUR = ite_folders[1]
 
     for ITE_NUM in range(ITE_CUR, MAX_ITE):
-
+        print('Iteration Number = {}'.format(ITE_NUM))
         last_step_dir = os.path.join('training', 'iterations', str(ITE_NUM))
         last_step_strategies_names = os.listdir(last_step_dir)
 
@@ -227,6 +228,7 @@ if __name__ == '__main__':
             last_step_strategies[dft_stg_idx] = default_strategies[stg_idx]
 
 
+        # ---------------------- Below are competitions -------------------
 
         for stg_idx, stg_nodes in stg_nodes_dict.items():
             map_score = 0

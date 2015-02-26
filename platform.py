@@ -106,8 +106,8 @@ def preprocess_maps(map_list_name):
 if __name__ == '__main__':
     main_start_time = time.time()
     
-    MAX_ITE = 20
-    NUM_DEFAULT = 4
+    MAX_ITE = 100
+    NUM_DEFAULT = 0
     NUM_WINNING = 16
     NUM_MUTATIONS = 16
     NUM_RANDOMS = 4

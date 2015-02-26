@@ -6,6 +6,27 @@ import networkx as nx
 import random
 from copy import deepcopy
 
+def avg_shortest_path_length(G, src, target):
+    target_dict = dict(zip(target, repeat(None, len(target))))
+    visited_dict = {}
+    rst_dict = {}
+    next_layer = [src]
+    for i in range(2):
+        current_layer = next_layer
+        next_layer = []
+        for x in current_layer:
+            if x not in visited_dict:
+                neighbors = G.neighbors(x)
+                next_layer.extend(neighbors)
+                for y in neighbors:
+                    if target_dict.has_key(y):
+                        rst_dict[y] = i + 1
+                    visited_dict[y] = None
+    s = sum(rst_dict.values())
+    s += 3 * (len(target_dict) - len(rst_dict))
+    avg = 1.0 * s / len(target_dict)
+    return avg
+            
 
 def convert_json_dict(fin_name):
     with open(fin_name, 'r') as fin:
@@ -244,13 +265,9 @@ class Strtg:
         scores = scores[0 : min(n_nodes * 3, len(scores))]
         scores_with_dist = []
         for s, src_node in scores:
-            dist = 0
-            for ss, dst_node in scores:
-                if src_node != dst_node:
-                    dist += nx.shortest_path_length(data['graph'], src_node, dst_node)
-            dist = 1.0 * dist / (len(scores) - 1) - 1
+            dist = avg_shortest_path_length(data['graph'], src_node, zip(*scores)[1])
             scores_with_dist.append((s + dist * self.weights['between_node'], src_node ))
-        
+      
 
         scores_with_dist.sort(reverse=True)
         rst = list(zip(*scores_with_dist)[1])
@@ -275,8 +292,8 @@ class Strtg:
 if __name__ == '__main__':
     
     
-    input_graph = '8.35.2.json'
-#     input_graph = '8.20.01.json'
+#     input_graph = '8.35.2.json'
+    input_graph = 'maps\\8.20.01.json'
     node_dict = convert_json_dict(input_graph)
     
     

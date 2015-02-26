@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{ee441530-0c2c-49b9-a5a5-700f9a744b95}</ProjectGuid>
+    <ProjectHome />
+    <StartupFile>platform.py</StartupFile>
+    <SearchPath />
+    <WorkingDirectory>.</WorkingDirectory>
+    <OutputPath>.</OutputPath>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'" />
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'" />
+  <ItemGroup>
+    <Content Include="all_maps.txt" />
+    <Content Include="continue_maps.txt" />
+    <Content Include="test_maps.txt" />
+    <Compile Include="local_test.py" />
+    <Compile Include="mutate_test.py" />
+    <Compile Include="platform.py" />
+    <Compile Include="process.py" />
+    <Compile Include="sim.py" />
+    <Compile Include="strategy.py" />
+    <Compile Include="strategy_rubbish.py" />
+    <Compile Include="uploader.py" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" />
+</Project>

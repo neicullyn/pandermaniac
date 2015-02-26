@@ -7,14 +7,22 @@ import random
 import multiprocessing as mp
 
 
-RANK_LOOK_UP_TABLE = {0: 20, 
-                    1: 15, 
-                    2: 12, 
-                    3: 9, 
-                    4: 6, 
-                    5: 4, 
-                    6: 2, 
-                    7: 1}
+##RANK_LOOK_UP_TABLE = {0: 20, 
+##                    1: 15, 
+##                    2: 12, 
+##                    3: 9, 
+##                    4: 6, 
+##                    5: 4, 
+##                    6: 2, 
+##                    7: 1}
+RANK_LOOK_UP_TABLE = {0: 1, 
+                    1: 0, 
+                    2: 0, 
+                    3: 0, 
+                    4: 0, 
+                    5: 0, 
+                    6: 0, 
+                    7: 0}
 
 def work_sim(args):
     return sim.run(*args)
@@ -190,20 +198,25 @@ if __name__ == '__main__':
         rank_dict = {}
 
         # stg_idx will range from 0 to NUM_WINNING
-        stg_nodes = {}
+        # stg_nodes = {}  HUGGGGGGGE BUGGGGGG
         for stg_idx, stg in last_step_strategies.items():
-            for one_map_info in map_info:
+            stg_nodes = {}
+            for one_map_info in map_info:                
                 map_name, map_data, json_dict, n_players, n_seeds = one_map_info
                 stg_nodes[map_name] = stg.get_nodes(map_data, n_players, n_seeds)
             stg_nodes_dict[stg_idx] = stg_nodes
+            
+        # for k, v in stg_nodes_dict.items():
+        #     print k, id(v)
 
         # add more strategies here
         # mutations
         # randoms
-        mut_stg_nodes = {}
+        
         last_step_stg_list = last_step_strategies.values()
         mutate_group = strategy.generate_mutation_group(last_step_stg_list, NUM_MUTATIONS)
         for stg_idx in range(NUM_MUTATIONS):
+            mut_stg_nodes = {}
             mut_stg_idx = stg_idx + NUM_WINNING
             mut_s = mutate_group[stg_idx]
             for one_map_info in map_info:
@@ -213,11 +226,12 @@ if __name__ == '__main__':
             last_step_strategies[mut_stg_idx] = mut_s
 
 
-        rand_stg_nodes = {}
+        
         for stg_idx in range(NUM_RANDOMS):
             rand_stg_idx = stg_idx + NUM_WINNING + NUM_MUTATIONS
             s = strategy.Strtg()
             s.random_weight(strategy.preprocess({}))
+            rand_stg_nodes = {}
             for one_map_info in map_info:
                 map_name, map_data, json_dict, n_players, n_seeds = one_map_info
                 rand_stg_nodes[map_name] = s.get_nodes(map_data, n_players, n_seeds)
@@ -238,11 +252,13 @@ if __name__ == '__main__':
         count = 0
         pool = mp.Pool(4) 
         for stg_idx, stg_nodes in stg_nodes_dict.items():
-            
             if stg_idx >= NUM_STRATEGIES - NUM_DEFAULT:
                 continue
-             
+            print 'running node {}...'.format(stg_idx),
+            count += 1
+            
             map_score = 0
+            
             
             args_sim = []
             #changed
@@ -267,8 +283,14 @@ if __name__ == '__main__':
     
                         nodes[rand_idx] = [other_nodes_chosen]
                         # other_nodes_chosen_list.append(other_nodes_chosen)
-                    args_sim.append((json_dict.copy(), nodes.copy(), 1))
+                    args_sim.append((json_dict, nodes, 1))
                     
+            score1 = 0
+            sim_res_list = pool.map(work_sim, args_sim)    
+            for sim_res in sim_res_list:
+                score1 += get_score(sim_res, stg_idx)
+            
+            args_sim = []        
             for i_boost in range(NUM_DEFAULT):
                 for map_name, self_nodes_chosen in stg_nodes.items():
                     nodes = {}
@@ -288,13 +310,17 @@ if __name__ == '__main__':
     
                         nodes[rand_idx] = [other_nodes_chosen]
                         # other_nodes_chosen_list.append(other_nodes_chosen)
-                    args_sim.append((json_dict.copy(), nodes.copy(), 1))
-            print 'running node {}...'.format(count)
-            count += 1
+                    args_sim.append((json_dict, nodes, 1))
+            score2 = 0    
             sim_res_list = pool.map(work_sim, args_sim)    
             for sim_res in sim_res_list:
-                map_score += get_score(sim_res, stg_idx)
+                # print sim_res[0][0]
+                score2 += get_score(sim_res, stg_idx)
+            map_score = score1 + score2
+
+            print '{}, {}, {}'.format(score1, score2, map_score)
             rank_dict[stg_idx] = map_score
+            
         pool.close()
         pool.join()
 

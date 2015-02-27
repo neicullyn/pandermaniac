@@ -159,7 +159,7 @@ def mutate(strategy):
     mutate_key = random.choice(keys)
 #     mutate_rate = random.randint(0, 1) * 0.4 + 0.8 #0.8|1.2
     mutate_rate = 1
-    mutate_diff = (random.randint(0, 1) - 0.5) * 2 * 0.4 / len(keys)
+    mutate_diff = (random.randint(0, 1) - 0.5) * 2 * 0.2 / len(keys)
     s.weights[mutate_key] = abs(s.weights[mutate_key] * mutate_rate + mutate_diff)
     
     overall_weight = sum(s.weights.values())
@@ -213,15 +213,16 @@ def cross(src1, src2):
 def generate_mutation_group(src_group, n_size):
     rtn_group = []
     while len(rtn_group) < n_size:
-        mutate_type = random.choice(['mutate', 'swap', 'cross'])
+##        mutate_type = random.choice(['mutate', 'swap', 'cross'])
+        mutate_type = random.choice(['mutate', 'cross'])
         
         if mutate_type == 'mutate':
             src = random.choice(src_group)
             rtn_group.append(mutate(src))
         
-        if mutate_type == 'swap':
-            src = random.choice(src_group)
-            rtn_group.append(swap(src))
+##        if mutate_type == 'swap':
+##            src = random.choice(src_group)
+##            rtn_group.append(swap(src))
         
         if mutate_type == 'cross':
             src1 = random.choice(src_group)

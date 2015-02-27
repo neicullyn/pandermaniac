@@ -159,8 +159,8 @@ def mutate(strategy):
     mutate_key = random.choice(keys)
 #     mutate_rate = random.randint(0, 1) * 0.4 + 0.8 #0.8|1.2
     mutate_rate = 1
-    mutate_diff = (random.randint(0, 1) - 0.5) * 2 * 0.2 / len(keys)
-    s.weights[mutate_key] = max(s.weights[mutate_key] * mutate_rate + mutate_diff, 0)
+    mutate_diff = (random.randint(0, 1) - 0.5) * 2 * 0.4 / len(keys)
+    s.weights[mutate_key] = abs(s.weights[mutate_key] * mutate_rate + mutate_diff)
     
     overall_weight = sum(s.weights.values())
     if overall_weight < 1e-6:

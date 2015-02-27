@@ -114,13 +114,13 @@ def preprocess_maps(map_list_name):
 if __name__ == '__main__':
     main_start_time = time.time()
     
-    MAX_ITE = 2
+    MAX_ITE = 100
     NUM_DEFAULT = 4
     NUM_WINNING = 16
     NUM_MUTATIONS = 16
     NUM_RANDOMS = 4
     NUM_STRATEGIES = NUM_WINNING + NUM_MUTATIONS + NUM_RANDOMS + NUM_DEFAULT
-    map_info = load_maps('test_maps.txt')
+    map_info = load_maps('small_maps.txt')
     map_info_dict = {}
     for one_map_info in map_info:
         map_info_dict[one_map_info[0]] = one_map_info
@@ -145,7 +145,6 @@ if __name__ == '__main__':
             map_name, map_data, json_dict, n_players, n_seeds = one_map_info
             default_nodes[map_name] = s.get_nodes(map_data, n_players, n_seeds)
         default_nodes_list.append(default_nodes)
-
 
 
     last_step_strategies = {}
@@ -173,7 +172,8 @@ if __name__ == '__main__':
             s.read_from_file(os.path.join(last_step_dir, file_name))
             # last_step_strategies.append(s)
             stg_idx = int(file_name[:-5])
-            last_step_strategies[stg_idx] = s
+            last_step_strategies[stg_idx] = strategy.mutate(s)
+            print stg_idx, last_step_strategies[stg_idx]
 
 
 

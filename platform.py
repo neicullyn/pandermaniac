@@ -33,7 +33,7 @@ def get_score(sim_res, stg_idx):
         exit(0)
     sim_res = sim_res[0][0]
     # sim_res will look like {"strategy1": 243, "strategy6": 121, ... }
-    stg_rank = (sorted(sim_res, key=sim_res.get, reverse=True)).index(stg_idx)
+    stg_rank = (sorted(sim_res, key=sim_res.get, reverse=True)).index(str(stg_idx))
     if stg_rank in RANK_LOOK_UP_TABLE:
         return RANK_LOOK_UP_TABLE[stg_rank]
     return 0
@@ -114,13 +114,13 @@ def preprocess_maps(map_list_name):
 if __name__ == '__main__':
     main_start_time = time.time()
     
-    MAX_ITE = 100
+    MAX_ITE = 2
     NUM_DEFAULT = 4
     NUM_WINNING = 16
     NUM_MUTATIONS = 16
     NUM_RANDOMS = 4
     NUM_STRATEGIES = NUM_WINNING + NUM_MUTATIONS + NUM_RANDOMS + NUM_DEFAULT
-    map_info = load_maps('small_maps.txt')
+    map_info = load_maps('test_maps.txt')
     map_info_dict = {}
     for one_map_info in map_info:
         map_info_dict[one_map_info[0]] = one_map_info
@@ -200,14 +200,16 @@ if __name__ == '__main__':
         # stg_idx will range from 0 to NUM_WINNING
         # stg_nodes = {}  HUGGGGGGGE BUGGGGGG
         for stg_idx, stg in last_step_strategies.items():
+#             print stg_idx, stg
             stg_nodes = {}
             for one_map_info in map_info:                
                 map_name, map_data, json_dict, n_players, n_seeds = one_map_info
                 stg_nodes[map_name] = stg.get_nodes(map_data, n_players, n_seeds)
+#                 print stg_nodes[map_name]
             stg_nodes_dict[stg_idx] = stg_nodes
             
-        # for k, v in stg_nodes_dict.items():
-        #     print k, id(v)
+#         for k, v in stg_nodes_dict.items():
+#             print k, id(v)
 
         # add more strategies here
         # mutations
@@ -252,6 +254,8 @@ if __name__ == '__main__':
         count = 0
         pool = mp.Pool(4) 
         for stg_idx, stg_nodes in stg_nodes_dict.items():
+#             print stg_idx
+#             print stg_nodes
             if stg_idx >= NUM_STRATEGIES - NUM_DEFAULT:
                 continue
             print 'running node {}...'.format(stg_idx),
@@ -265,7 +269,7 @@ if __name__ == '__main__':
             for i_boost in range(4):
                 for map_name, self_nodes_chosen in stg_nodes.items():
                     nodes = {}
-                    nodes[stg_idx] = [self_nodes_chosen]
+                    nodes[str(stg_idx)] = [self_nodes_chosen]
                     
     
                     # make other_nodes_chosen
@@ -281,7 +285,7 @@ if __name__ == '__main__':
                         other_stg_nodes = stg_nodes_dict[rand_idx]
                         other_nodes_chosen = other_stg_nodes[map_name]
     
-                        nodes[rand_idx] = [other_nodes_chosen]
+                        nodes[str(rand_idx)] = [other_nodes_chosen]
                         # other_nodes_chosen_list.append(other_nodes_chosen)
                     args_sim.append((json_dict, nodes, 1))
                     
@@ -294,7 +298,7 @@ if __name__ == '__main__':
             for i_boost in range(NUM_DEFAULT):
                 for map_name, self_nodes_chosen in stg_nodes.items():
                     nodes = {}
-                    nodes[stg_idx] = [self_nodes_chosen]
+                    nodes[str(stg_idx)] = [self_nodes_chosen]
                     
     
                     # make other_nodes_chosen
@@ -308,13 +312,14 @@ if __name__ == '__main__':
                         other_stg_nodes = stg_nodes_dict[rand_idx]
                         other_nodes_chosen = other_stg_nodes[map_name]
     
-                        nodes[rand_idx] = [other_nodes_chosen]
+                        nodes[str(rand_idx)] = [other_nodes_chosen]
                         # other_nodes_chosen_list.append(other_nodes_chosen)
                     args_sim.append((json_dict, nodes, 1))
             score2 = 0    
             sim_res_list = pool.map(work_sim, args_sim)    
             for sim_res in sim_res_list:
                 # print sim_res[0][0]
+#                 print sim_res
                 score2 += get_score(sim_res, stg_idx)
             map_score = score1 + score2
 

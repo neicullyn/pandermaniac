@@ -267,7 +267,7 @@ if __name__ == '__main__':
             
             args_sim = []
             #changed
-            for i_boost in range(4):
+            for i_boost in range(1):
                 for map_name, self_nodes_chosen in stg_nodes.items():
                     nodes = {}
                     nodes[str(stg_idx)] = [self_nodes_chosen]
@@ -278,7 +278,7 @@ if __name__ == '__main__':
                     map_name, map_data, json_dict, n_players, n_seeds = play_map_info
                     # other_nodes_chosen_list = []
                     players_in_game = {stg_idx}
-                    for one_player in range(2-1):
+                    for one_player in range(3):
                         rand_idx = random.randrange(0, NUM_STRATEGIES - NUM_DEFAULT)
                         while rand_idx in players_in_game:
                             rand_idx = random.randrange(0, NUM_STRATEGIES - NUM_DEFAULT)
@@ -295,7 +295,7 @@ if __name__ == '__main__':
             for sim_res in sim_res_list:
                 score1 += get_score(sim_res, stg_idx)
                 
-            score1 = score1 - 12 * len(stg_nodes)
+            score1 = score1 - 1 * len(stg_nodes)
             
             args_sim = []        
             for i_boost in range(1):

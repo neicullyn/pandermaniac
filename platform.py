@@ -116,7 +116,7 @@ if __name__ == '__main__':
     main_start_time = time.time()
     
     MAX_ITE = 100
-    NUM_DEFAULT = 4
+    NUM_DEFAULT = 2
     NUM_WINNING = 16
     NUM_MUTATIONS = 16
     NUM_RANDOMS = 4
@@ -249,6 +249,18 @@ if __name__ == '__main__':
             dft_stg_idx = stg_idx + NUM_WINNING + NUM_MUTATIONS + NUM_RANDOMS
             stg_nodes_dict[dft_stg_idx] = default_nodes_list[stg_idx]
             last_step_strategies[dft_stg_idx] = default_strategies[stg_idx]
+            
+        #random stg to act as environment
+        for stg_idx in range(2):
+            rand_stg_idx = stg_idx + NUM_WINNING + NUM_MUTATIONS + NUM_RANDOMS + NUM_DEFAULT
+            s = strategy.Strtg()
+            s.random_weight(strategy.preprocess({}))
+            rand_stg_nodes = {}
+            for one_map_info in map_info:
+                map_name, map_data, json_dict, n_players, n_seeds = one_map_info
+                rand_stg_nodes[map_name] = s.get_nodes(map_data, n_players, n_seeds)
+            stg_nodes_dict[rand_stg_idx] = rand_stg_nodes
+            last_step_strategies[rand_stg_idx] = s
 
 
         # ---------------------- Below are competitions -------------------
@@ -257,7 +269,7 @@ if __name__ == '__main__':
         for stg_idx, stg_nodes in stg_nodes_dict.items():
 #             print stg_idx
 #             print stg_nodes
-            if stg_idx >= NUM_STRATEGIES - NUM_DEFAULT:
+            if stg_idx >= NUM_STRATEGIES - NUM_DEFAULT - 2:
                 continue
             print 'running node {}...'.format(stg_idx),
             count += 1
@@ -310,7 +322,15 @@ if __name__ == '__main__':
                     # other_nodes_chosen_list = []
                     players_in_game = {stg_idx}
                     for one_player in range(NUM_DEFAULT):
-                        rand_idx = NUM_STRATEGIES - NUM_DEFAULT + one_player
+                        rand_idx = NUM_STRATEGIES - NUM_DEFAULT - 2 + one_player
+                        players_in_game.add(rand_idx)
+                        other_stg_nodes = stg_nodes_dict[rand_idx]
+                        other_nodes_chosen = other_stg_nodes[map_name]
+    
+                        nodes[str(rand_idx)] = [other_nodes_chosen]
+                        
+                    for one_player in range(NUM_DEFAULT):
+                        rand_idx = NUM_STRATEGIES - 2 + one_player
                         players_in_game.add(rand_idx)
                         other_stg_nodes = stg_nodes_dict[rand_idx]
                         other_nodes_chosen = other_stg_nodes[map_name]

@@ -16,8 +16,8 @@ import multiprocessing as mp
 ##                    6: 2, 
 ##                    7: 1}
 RANK_LOOK_UP_TABLE = {0: 1, 
-                    1: 0, 
-                    2: 0, 
+                    1: 0.5, 
+                    2: 0.25, 
                     3: 0, 
                     4: 0, 
                     5: 0, 
@@ -112,6 +112,7 @@ def preprocess_maps(map_list_name):
         print 'finished in {:.3f} seconds'.format(end_time - start_time)
     
 if __name__ == '__main__':
+#     preprocess_maps('final_maps.txt')
     main_start_time = time.time()
     
     MAX_ITE = 100
@@ -120,7 +121,7 @@ if __name__ == '__main__':
     NUM_MUTATIONS = 16
     NUM_RANDOMS = 4
     NUM_STRATEGIES = NUM_WINNING + NUM_MUTATIONS + NUM_RANDOMS + NUM_DEFAULT
-    map_info = load_maps('small_maps.txt')
+    map_info = load_maps('final_maps.txt')
     map_info_dict = {}
     for one_map_info in map_info:
         map_info_dict[one_map_info[0]] = one_map_info
@@ -295,7 +296,7 @@ if __name__ == '__main__':
                 score1 += get_score(sim_res, stg_idx)
             
             args_sim = []        
-            for i_boost in range(NUM_DEFAULT):
+            for i_boost in range(1):
                 for map_name, self_nodes_chosen in stg_nodes.items():
                     nodes = {}
                     nodes[str(stg_idx)] = [self_nodes_chosen]
@@ -306,8 +307,8 @@ if __name__ == '__main__':
                     map_name, map_data, json_dict, n_players, n_seeds = play_map_info
                     # other_nodes_chosen_list = []
                     players_in_game = {stg_idx}
-                    for one_player in range(1):
-                        rand_idx = NUM_STRATEGIES - NUM_DEFAULT + i_boost
+                    for one_player in range(NUM_DEFAULT):
+                        rand_idx = NUM_STRATEGIES - NUM_DEFAULT + one_player
                         players_in_game.add(rand_idx)
                         other_stg_nodes = stg_nodes_dict[rand_idx]
                         other_nodes_chosen = other_stg_nodes[map_name]

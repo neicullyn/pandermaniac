@@ -1,7 +1,7 @@
 {
     "between_node": 0, 
-    "closeness_centrality": 0, 
-    "clustering": 1, 
+    "closeness_centrality": 0.5, 
+    "clustering": 0.5, 
     "degree_centrality": 0, 
     "neighbor_number_1": 0, 
     "neighbor_number_2": 0, 

@@ -1,0 +1,9 @@
+{
+    "between_node": 0.0, 
+    "closeness_centrality": 0.12869189457539934, 
+    "clustering": 0.11371642666716313, 
+    "degree_centrality": 0.30459051756790373, 
+    "neighbor_number_1": 0.17670814570460347, 
+    "neighbor_number_2": 0.2168511892948253, 
+    "neighbor_number_3": 0.05944182619010492
+}

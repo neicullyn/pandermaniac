@@ -15,10 +15,10 @@ import multiprocessing as mp
 ##                    5: 4, 
 ##                    6: 2, 
 ##                    7: 1}
-RANK_LOOK_UP_TABLE = {0: 1, 
-                    1: 0.5, 
-                    2: 0.25, 
-                    3: 0, 
+RANK_LOOK_UP_TABLE = {0: 4, 
+                    1: 3, 
+                    2: 2, 
+                    3: 1, 
                     4: 0, 
                     5: 0, 
                     6: 0, 
@@ -294,6 +294,8 @@ if __name__ == '__main__':
             sim_res_list = pool.map(work_sim, args_sim)    
             for sim_res in sim_res_list:
                 score1 += get_score(sim_res, stg_idx)
+                
+            score1 = score1 - 12 * len(stg_nodes)
             
             args_sim = []        
             for i_boost in range(1):
